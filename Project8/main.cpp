@@ -30,15 +30,29 @@ private:
 		bin_tree(int val) : value(val), left(nullptr), right(nullptr){}
 		
 	};
+
+
 	bin_tree* root;
 
 
 	Set() :root(nullptr){}
+
+
 	Set(const Set& other) {
 		root = copy(other.root);
 	}
 
+
 	~Set() { destroy(root);}
+
+
+	Set& operator = (const Set& other) {
+		if (this == &other) return *this;
+		root = copy(other.root);
+		return *this;
+
+	}
+
 
 	bin_tree* copy(const bin_tree* tree) {
 		if (!tree) {
@@ -52,6 +66,8 @@ private:
 		}
 
 	}
+
+
 	bool insert(bin_tree* tree, int val) {
 		if (!tree) {
 			tree = new bin_tree(val);
@@ -105,6 +121,8 @@ private:
 			//тут должен быть код:)
 		}
 	}
+
+
 	void print(bin_tree*tree) {
 		if (tree) {
 			print(tree->left);
