@@ -73,7 +73,21 @@ private:
 			erase(tree->left, key);
 		}
 		if (tree->left == nullptr && tree->right == nullptr) {
-			
+			destroy(tree);
+			return true;
+		}
+		else if(tree->left!=nullptr) {
+			bin_tree* tmp = tree;
+			tree = tree->left;
+			delete tmp;
+		}
+		else if ((tree->right != nullptr)) {
+			bin_tree* tmp = tree;
+			tree = tree->right;
+			delete tmp;
+		}
+		else {
+			//тут должен быть код:)
 		}
 	}
 
