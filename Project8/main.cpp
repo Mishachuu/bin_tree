@@ -3,7 +3,7 @@
 конструктор копировани€;
 деструктор;
 оператор присваивани€;
-void print() Ц печать содержимого;
+void print() Ц печать содержимого;**
 bool insert(int key) Ц вставка элемента;**
 bool contains(int key) - проверка наличи€ элемента;**
 bool erase(int key) Ц удаление элемента;*!
@@ -34,11 +34,24 @@ private:
 
 
 	Set() :root(nullptr){}
-
+	Set(const Set& other) {
+		root = copy(other.root);
+	}
 
 	~Set() { destroy(root);}
 
+	bin_tree* copy(const bin_tree* tree) {
+		if (!tree) {
+			return nullptr;
+		}
+		else {
+			bin_tree* new_tree = new bin_tree(tree->value);
+			new_tree->left = copy(tree->left);
+			new_tree->right = copy(tree->right);
+			return new_tree;
+		}
 
+	}
 	bool insert(bin_tree* tree, int val) {
 		if (!tree) {
 			tree = new bin_tree(val);
