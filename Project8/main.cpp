@@ -12,16 +12,31 @@ bool erase(int key) Ц удаление элемента;
 
 */
 using namespace std;
+
+
 class Set {
+
+
 private:
+
+
 	struct bin_tree
 	{
 		int value;
 		bin_tree* left;
 		bin_tree* right;
 		bin_tree(int val) : value(val), left(nullptr), right(nullptr){}
+		
 	};
 	bin_tree* root;
+
+
+	Set() :root(nullptr){}
+
+
+	~Set() { destroy(root);}
+
+
 	bool insert(bin_tree* tree, int val) {
 		if (!tree) {
 			tree = new bin_tree(val);
@@ -35,6 +50,8 @@ private:
 		}
 		return true;
 	}
+
+
 	bool contains(bin_tree* tree, int key) {
 		if (!tree) return false;
 		if (key > tree->value) {
@@ -46,4 +63,26 @@ private:
 		return true;
 	}
 
+
+	bool erase(bin_tree* tree, int key) {
+		if (!tree) { return false; }
+		if (key > tree->value) {
+			erase(tree->right, key);
+		}
+		if (key < tree->value) {
+			erase(tree->left, key);
+		}
+		if (tree->left == nullptr && tree->right == nullptr) {
+			
+		}
+	}
+
+
+	void destroy(bin_tree* tree) {
+		if (!tree) {
+			destroy(tree->left);
+			destroy(tree->right);
+			delete tree;
+		}
+	}
 };
