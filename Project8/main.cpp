@@ -4,13 +4,15 @@
 деструктор;
 оператор присваивани€;
 void print() Ц печать содержимого;
-bool insert(int key) Ц вставка элемента;
-bool contains(int key) - проверка наличи€ элемента;
-bool erase(int key) Ц удаление элемента;
+bool insert(int key) Ц вставка элемента;**
+bool contains(int key) - проверка наличи€ элемента;**
+bool erase(int key) Ц удаление элемента;*!
 ¬ариант 3: дл€ заданного std::vector<int> верните новый std::vector<int>,
 содержащий все повтор€ющиес€ элементы (дл€ вектора {3 2 2 4} результат должен быть {2} )
 
 */
+#include<iostream>
+#include <conio.h>
 using namespace std;
 
 
@@ -88,6 +90,14 @@ private:
 		}
 		else {
 			//тут должен быть код:)
+		}
+	}
+	void print(bin_tree*tree) {
+		if (tree) {
+			print(tree->left);
+			cout <<tree->value ;
+			print(tree->right);
+			
 		}
 	}
 
