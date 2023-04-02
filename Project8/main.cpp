@@ -29,23 +29,22 @@ using namespace std;
 
 class Set {
 
-
-private:
-
-
-	bin_tree* root;
-
 public:
 	Set() :root(nullptr){}
-	Set(bin_tree* other): root(other){}
-
-	Set(const Set& other) {
-		root = copy(other.root);
-	}
 
 
 	~Set() { destroy(root);}
 
+
+	bool insert(int val) {
+	return insert_shadow(&root, val);
+	}
+
+
+	bool contains(int key) const {
+		return contains_shadow( root, key);
+	}
+	 
 
 	Set& operator = (const Set& other) {
 		if (this == &other) return *this;
@@ -53,6 +52,26 @@ public:
 		root = copy(other.root);
 		return *this;
 
+	}
+
+
+	bool erase(int key) {
+		return erase_shadow(&root, key);
+	}
+
+	void print() {
+		obhod(root);
+		cout << endl;
+	}
+
+
+private:
+	bin_tree* root;
+	
+	Set(bin_tree* other): root(other){}
+
+	Set(const Set& other) {
+		root = copy(other.root);
 	}
 
 
@@ -70,86 +89,63 @@ public:
 	}
 
 
-	bool insert(int val) {
-		bin_tree* tree =root;
-		if (!root) {
-			root = new bin_tree(val);
+	bool insert_shadow(bin_tree** node, int val) {
+		if (!*node) {
+			*node = new bin_tree(val);
 			return true;
 		}
-		while (tree) {
-			if (val < tree->value) {
-				if (tree->left == nullptr) {
-					tree->left = new bin_tree(val);
-					return true;
-				}
-				tree = tree->left;
-			}
-			else if (val > tree->value) {
-				if (tree->right == nullptr) {
-					tree->right = new bin_tree(val);
-					return true;
-				}
-				tree = tree->right;
-			}
-			else {
-				return false;
-			}
+		if (val < (*node)->value) {
+			return insert_shadow(&(*node)->left,val);
 		}
-	}
-
-
-	bool contains(int key) {
-		bin_tree* tree = root;
-		while (tree) {
-			if (key < tree->value) {
-				tree = tree->left;
-			}
-			else if (key > tree->value) {
-				tree = tree->right;
-			}
-			else if (key == tree->value) {
-				return true;
-			}
+		else if (val > (*node)->value) {
+			return insert_shadow(&(*node)->right, val);
 		}
 		return false;
 	}
 
-	bool erase(int key) {
-		bin_tree* tree = root;
-		if (!tree) { return false; }
-		while (tree) {
-			if (key < tree->value) {
-				tree = tree->left;
-			}
-			else if (key > tree->value) {
-				tree = tree->right;
-			}
-			else if (key == tree->value) {
-				if (tree->left == nullptr && tree->right == nullptr) {
-					destroy(tree);
-				}
-				else if (tree->left != nullptr) {
-					bin_tree* tmp = tree;
-					tree = tree->left;
-					delete tmp;
-					return true;
-				}
-				else if (tree->right != nullptr) {
-					bin_tree* tmp = tree;
-					tree = tree->right;
-					delete tmp;
-					return true;
-				}
-				else {
-					bin_tree* tmp = find_min(tree);
-					tree->value = tmp->value;
-					tree = root->right;
-					erase(tmp->value);
-					return true;
-				}
-			}
+
+	bool contains_shadow(const bin_tree* node, int key)const {
+		if (!node) {
+			return false;
 		}
-		return false;
+		if (key == node->value) { return true; }
+		else if (key < node->value) {
+			return contains_shadow(node->left, key);
+		}
+		else {
+			return contains_shadow(node->right,key);
+		}
+
+	}
+
+	bool erase_shadow(bin_tree** node,int key) {
+		if (!*node) return false;
+
+		if (key < (*node)->value) {
+			return erase_shadow(&(*node)->left, key);
+		}
+		else if (key > (*node)->value) {
+			return erase_shadow(&(*node)->right, key);
+		}
+		
+		if ((*node)->left == nullptr && (*node)->right == nullptr) {
+			delete *node;
+		}
+		else if ((*node)->left != nullptr) {
+			bin_tree* tmp = (*node)->left;
+			delete *node;
+			*node = tmp;
+		}
+		else if ((*node)->right != nullptr) {
+			bin_tree* tmp = (*node)->right;
+			delete *node;
+			*node = tmp;
+		}
+		else {
+			bin_tree* tmp = find_min((*node));
+			(*node)->value = tmp->value;
+			erase_shadow(&(*node)->right, (*node)->value);
+		}
 	}
 
 	bin_tree* find_min(bin_tree* root) {
@@ -159,15 +155,13 @@ public:
 		return root;
 	}
 
-	void print() {
-		bin_tree* tree = root;
-		if (!root) {
-			cout << tree->value;
-
-
+	void obhod(bin_tree* root)const {
+		if (root) {
+			obhod(root->left);
+			cout << root->value<<' ';
+			obhod(root->right);
 		}
 	}
-
 
 	void destroy(bin_tree* tree) {
 		if (tree) {
@@ -176,43 +170,13 @@ public:
 			delete tree;
 		}
 	}
-	iterator_set begin();
-	iterator_set end();
+
 };
 
 
-class iterator_set {
-	bin_tree* current;
-public:
-	iterator_set(bin_tree* cur):current(cur){}
-	void left() {
-		if (current != nullptr) current=current->left;
-		else { cout << "Итератор достиг конца"; }
-	}
-	void right() {
-		if (current != nullptr) current=current->right;
-		else{ cout << "Итератор достиг конца"; }
-	}
-	int operator*() const{
-		return current->value;
-	}
-	bool operator!=(const iterator_set& other) {
-		if (this->current != other.current) return true;
-		return false;
-	}
-	iterator_set begin() {
-		bin_tree* cur = current;
-		while (cur->left != nullptr) {
-			cur = cur->left;
-		}
-		return iterator_set(cur);
-	}
-	iterator_set end() {
-		return(iterator_set(nullptr));
-	}
-};
 
-vector<int> findDuplicates(const vector<int>& vec) {
+
+/*vector<int> findDuplicates(const vector<int>& vec) {
 	Set unique;
 	
 	Set duplicates;
@@ -229,7 +193,7 @@ vector<int> findDuplicates(const vector<int>& vec) {
 		result.push_back(*(it));
 	}
 	return result;
-}
+}*/
 int main() {
 	Set a;
 	for (int i = 0; i < 10; i++) {
@@ -240,8 +204,10 @@ int main() {
 		b.insert(i);
 	}
 	a = b;
-	cout<< a.contains(2);
-	cout << a.contains(15);
-	cout << a.erase(15);
+	a.print();
+	cout << a.contains(15)<<' ';
+	cout << a.insert(21) << ' ';
+	cout<<a.erase(12) << ' ';
+	a.print();
 	return 0;
 }
