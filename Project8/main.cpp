@@ -176,6 +176,12 @@ private:
 
 };
 
+size_t lcg() {
+	static size_t x = 0;
+	x = (1021 * x + 24631) % 116640;
+	return x;
+}
+
 int Check()
 {
 	int number = 0;
@@ -193,7 +199,9 @@ int Check()
 
 	return number;
 }
-int GetKey()
+
+
+int get_key()
 {
 	int key = _getch();
 	if ((key == 0) || (key == 224))
@@ -201,40 +209,107 @@ int GetKey()
 	return key;
 }
 
+int menu(){
+	cout << "\nWhat are you want to do?\n\n"
+		"1 - add an element\n"
+		"2 - check an element\n"
+		"3 - delete an element\n"
+		"4 - print\n"
+		"5 - exercise\n"
+		"6 - exercise time\n\n"
+		"go out: Esc\n";
 
 
-/*vector<int> findDuplicates(const vector<int>& vec) {
-	Set unique;
-	
-	Set duplicates;
+	while (true)
+	{
+		int key = get_key();
+		if ((key == 27) || (key > '0' && key <= '6'))
+			return key;
+	}
+}
+
+
+
+void print_tree(Bin_tree& tree) {
+	tree.print();
+}
+
+
+void add_element(Bin_tree& tree) {
+	int elem = Check();
+	tree.insert(elem);
+}
+void delete_elem(Bin_tree& tree) {
+	int key = Check();
+	if (tree.erase(key)) {
+		cout << "Element removed";
+	}
+	else {
+		cout << "Element not removed";
+	}
+}
+
+void check_elem(Bin_tree& tree) {
+	int key = Check();
+	if (tree.contains(key)) {
+		cout << "Found!";
+	}
+	else {
+		cout << "Not Found";
+	}
+}
+
+vector<int> find_duplicates(const vector<int>& vec) {
+	Bin_tree tree;
+	vector<int> duplicates;
+
 	for (int i : vec) {
-		if (unique.contains(i) == false) {
-			unique.insert(i);
+		if (tree.contains(i)) {
+			if (find(duplicates.begin(), duplicates.end(), i) == duplicates.end()) {
+				duplicates.push_back(i);
+			}
 		}
 		else {
-			 duplicates.insert(i);
+			tree.insert(i);
 		}
 	}
-	vector<int> result;
-	for (iterator_set it = duplicates.begin(); it != duplicates.end();it.right()) {
-		result.push_back(*(it));
-	}
-	return result;
-}*/
+	return duplicates;
+}
+
+
 int main() {
-	Bin_tree a;
-	for (int i = 0; i < 10; i++) {
-		a.insert(i);
+	Bin_tree tree;
+	vector<int> mas = { 3,2,2,2,3,1,4,7,9,0,3,3,3 };
+	vector<int> dubl = find_duplicates(mas);
+	for (int i : dubl) {
+		cout << i;
 	}
-	Bin_tree b;
-	for (int i = 10; i < 20; i++) {
-		b.insert(i);
-	}
-	a = b;
-	a.print();
-	cout << a.contains(15)<<' ';
-	cout << a.insert(21) << ' ';
-	cout<<a.erase(12) << ' ';
-	a.print();
+	//int m = menu();
+	//while (true) {
+	//	switch (m)
+	//	{
+	//	case 1:
+	//		add_element(tree);
+	//		break;
+	//	case 2:
+	//		check_elem(tree);
+	//		break;
+	//	case 3:
+	//		delete_elem(tree);
+	//		break;
+	//	case 4:
+	//		cout << "1";
+	//		print_tree(tree);
+	//		break;
+	//	case 5:
+
+	//		break;
+	//	case 6:
+
+	//		break;
+	//	case 27:
+	//		break;
+	//	}
+	//}
 	return 0;
 }
