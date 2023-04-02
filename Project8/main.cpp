@@ -14,6 +14,8 @@ bool erase(int key) Ц удаление элемента;*!
 #include<iostream>
 #include <conio.h>
 #include <vector>
+#include <ostream>
+#include <iomanip>
 using namespace std;
 
 
@@ -61,7 +63,6 @@ public:
 
 	void print() {
 		obhod(root);
-		cout << endl;
 	}
 
 
@@ -184,8 +185,8 @@ size_t lcg() {
 
 int Check()
 {
-	int number = 0;
-	while (number <=1)
+	int number=-1;
+	while (number<=0)
 	{
 		while (!(cin >> number) || (cin.peek() != '\n'))
 		{
@@ -193,7 +194,7 @@ int Check()
 			while (cin.get() != '\n');
 			cout << "ќшибка! ¬ведите целочисленное значение\n";
 		}
-		if (number <= 1) cout << "ќшибка! ¬ведите целочисленное значение\n";
+		if (number <= 0) cout << "ќшибка! ¬ведите целочисленное значение\n";
 
 	}
 
@@ -208,6 +209,79 @@ int get_key()
 		key = _getch();
 	return key;
 }
+
+void create_time(int size) {
+	system("cls");
+	Bin_tree tree;
+	clock_t start, end;
+	double average_time = 0;
+	for (int i = 0; i < 100; i++) {
+		start = clock();
+		for (int j = 0; j < size; j++) {
+			tree.insert(int(lcg()));
+		}
+		end = clock();
+		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
+	}
+	average_time /= 100;
+	cout << endl << "Time of create  " << size << " elements: " << average_time;
+}
+
+
+void search_time(int size) {
+	Bin_tree tree;
+	clock_t start, end;
+	double average_time = 0;
+	for (int i = 0; i < size; i++)
+		tree.insert(int(lcg()));
+
+	for (int i = 0; i < 1000; i++) {
+		int val = int(lcg());
+		while (tree.contains(val) == false) val = int(lcg());
+		start = clock();
+		tree.contains(val);
+		end = clock();
+		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
+	}
+	average_time /= 1000;
+	cout << endl << "Time of search element " << size << average_time;
+}
+
+
+void add_del_time(int size) {
+	Bin_tree insert_tree;
+	clock_t start, end;
+	double average_time = 0;
+	for (int j = 0; j < size; j++) {
+		insert_tree.insert(int(lcg()));
+	}
+	for (int i = 0; i < 1000; i++) {
+		int val = int(lcg());
+		while (insert_tree.contains(val) == true) val = int(lcg());
+		start = clock();
+		insert_tree.insert(val);
+		end = clock();
+		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
+	}
+	average_time /= 1000;
+	cout << endl << "Time of insert " << size << average_time;
+	average_time = 0;
+	Bin_tree erase_tree;
+	for (int j = 0; j < size; j++)
+		erase_tree.insert(int(lcg()));
+	for (int i = 0; i < 1000; i++)
+	{
+		int val = int(lcg());
+		while (erase_tree.contains(val) == false) val = int(lcg());
+		start = clock();
+		erase_tree.erase(val);
+		end = clock();
+		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
+	}
+	average_time /= 1000;
+	cout << endl << "Time of erase " << size << average_time;
+}
+
 
 int menu(){
 	cout << "\nWhat are you want to do?\n\n"
@@ -229,6 +303,55 @@ int menu(){
 }
 
 
+void menu_time() {
+	int size;
+	cout << "What size to calculate?\n\n"
+		"1 - 1000\n"
+		"2 - 10000\n"
+		"3 - 100000\n";
+	int param = Check();
+	while (param > 3 || param <= 0)
+	{
+		cout << "Incorrect value" << endl << "Operation є";
+		param = Check();
+	}
+	system("cls");
+	switch (param)
+	{
+	case 1:
+		size = 1000;
+		break;
+	case 2:
+		size = 10000;
+		break;
+	case 3:
+		size = 100000;
+		break;
+	}
+	cout << "What time to calculate?\n\n"
+		"1 - create tree\n"
+		"2 - search element\n"
+		"3 - delete and add\n";
+	int n = Check();
+	while (n > 4 || n <= 0)
+	{
+		cout << "Incorrect value";
+		n = Check();
+	}
+	switch (n)
+	{
+	case 1:
+		create_time(size);
+		break;
+	case 2:
+		search_time(size);
+		break;
+	case 3:
+		add_del_time(size);
+		break;
+	}
+}
+
 
 void print_tree(Bin_tree& tree) {
 	tree.print();
@@ -236,10 +359,17 @@ void print_tree(Bin_tree& tree) {
 
 
 void add_element(Bin_tree& tree) {
+	system("cls");
+	cout << "enter element";
 	int elem = Check();
 	tree.insert(elem);
 }
+
+
 void delete_elem(Bin_tree& tree) {
+	system("cls");
+	tree.print();
+	cout << "write key";
 	int key = Check();
 	if (tree.erase(key)) {
 		cout << "Element removed";
@@ -249,7 +379,10 @@ void delete_elem(Bin_tree& tree) {
 	}
 }
 
+
 void check_elem(Bin_tree& tree) {
+	system("cls");
+	tree.print();
 	int key = Check();
 	if (tree.contains(key)) {
 		cout << "Found!";
@@ -258,6 +391,7 @@ void check_elem(Bin_tree& tree) {
 		cout << "Not Found";
 	}
 }
+
 
 vector<int> find_duplicates(const vector<int>& vec) {
 	Bin_tree tree;
@@ -277,39 +411,60 @@ vector<int> find_duplicates(const vector<int>& vec) {
 }
 
 
-int main() {
-	Bin_tree tree;
-	vector<int> mas = { 3,2,2,2,3,1,4,7,9,0,3,3,3 };
-	vector<int> dubl = find_duplicates(mas);
+void padding_vector() {
+	system("cls");
+	vector<int> mass;
+	cout << "how many items do you want to add?\n";
+	int size = Check();
+	for (int i = 0; i < size; i++) {
+		int val = Check();
+		mass.push_back(val);
+	}
+	system("cls");
+	cout << "your vector:";
+	for (int i : mass) {
+		cout << i;
+	}
+	cout << "\nyour vector from duplicate:";
+	vector<int>dubl = find_duplicates(mass);
 	for (int i : dubl) {
 		cout << i;
 	}
-	//int m = menu();
-	//while (true) {
-	//	switch (m)
-	//	{
-	//	case 1:
-	//		add_element(tree);
-	//		break;
-	//	case 2:
-	//		check_elem(tree);
-	//		break;
-	//	case 3:
-	//		delete_elem(tree);
-	//		break;
-	//	case 4:
-	//		cout << "1";
-	//		print_tree(tree);
-	//		break;
-	//	case 5:
+}
 
-	//		break;
-	//	case 6:
 
-	//		break;
-	//	case 27:
-	//		break;
-	//	}
-	//}
+int main() {
+	setlocale(LC_ALL, "");
+	Bin_tree tree;
+	while (true) {
+		int m = menu();
+		if (m == 27) break;
+		switch (m)
+		{
+		case '1':
+			add_element(tree);
+			break;
+		case '2':
+			check_elem(tree);
+			break;
+		case '3':
+			delete_elem(tree);
+			break;
+		case '4':
+			print_tree(tree);
+			break;
+		case '5':
+			padding_vector();
+			break;
+		case '6':
+			menu_time();
+			break;
+		case 27:
+			break;
+		}
+	}
 	return 0;
 }
+
+//Time of create  1000 elements: 0.00055 Time of create  10000 elements: 0.00403 Time of create  100000 elements: 0.03944
+//Time of search element 1000 0.000184 Time of search element 10000 0.002761
