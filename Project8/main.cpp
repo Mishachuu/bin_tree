@@ -176,6 +176,30 @@ private:
 
 };
 
+int Check()
+{
+	int number = 0;
+	while (number <=1)
+	{
+		while (!(cin >> number) || (cin.peek() != '\n'))
+		{
+			cin.clear();
+			while (cin.get() != '\n');
+			cout << "Ошибка! Введите целочисленное значение\n";
+		}
+		if (number <= 1) cout << "Ошибка! Введите целочисленное значение\n";
+
+	}
+
+	return number;
+}
+int GetKey()
+{
+	int key = _getch();
+	if ((key == 0) || (key == 224))
+		key = _getch();
+	return key;
+}
 
 
 
