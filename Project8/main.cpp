@@ -16,6 +16,7 @@ bool erase(int key) Ц удаление элемента;*!
 #include <vector>
 #include <ostream>
 #include <iomanip>
+#include <fstream>
 
 using namespace std;
 
@@ -221,6 +222,8 @@ int get_key()
 
 void create_time(int size) {
 	system("cls");
+	ofstream outfile("create_time.txt", ios_base::app);
+	outfile << "create_time " << size << endl;
 	Bin_tree tree;
 	clock_t start, end;
 	double average_time = 0;
@@ -231,13 +234,17 @@ void create_time(int size) {
 		}
 		end = clock();
 		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
+		outfile << i << " " << (double(end - start)) / (double(CLOCKS_PER_SEC)) << endl;
 	}
+	outfile.close();
 	average_time /= 100;
 	cout << endl << "Time of create  " << size << " elements: " << average_time;
 }
 
 
 void search_time(int size) {
+	ofstream outfile("Search_time.txt", ios_base::app);
+	outfile << "Search_time " << size << endl;
 	Bin_tree tree;
 	clock_t start, end;
 	long double average_time = 0;
@@ -251,19 +258,25 @@ void search_time(int size) {
 		tree.contains(val);
 		end = clock();
 		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
+		outfile << i << " " << (double(end - start)) / (double(CLOCKS_PER_SEC)) << endl;
+
 	}
+	outfile.close();
 	average_time /= 1000;
 	cout << endl << "Time of search element " << size << average_time;
 }
 
 
 void add_del_time(int size) {
+	ofstream outfile("add_del_time.txt", ios_base::app);
+	outfile << "add_del_time " << size << endl;
 	Bin_tree insert_tree;
 	clock_t start, end;
 	long double average_time = 0;
 	for (int j = 0; j < size; j++) {
 		insert_tree.insert(int(lcg()));
 	}
+	outfile << "add_time"<< endl;
 	for (int i = 0; i < 1000; i++) {
 		int val = int(lcg());
 		while (insert_tree.contains(val) == true) val = int(lcg());
@@ -271,10 +284,12 @@ void add_del_time(int size) {
 		insert_tree.insert(val);
 		end = clock();
 		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
+		outfile << i << " " << (double(end - start)) / (double(CLOCKS_PER_SEC)) << endl;
 	}
 	average_time /= 1000;
 	cout << endl << "Time of insert " << size << average_time;
 	average_time = 0;
+	outfile << "del_time "<< endl;
 	for (int i = 0; i < 1000; i++)
 	{
 		int val = int(lcg());
@@ -283,7 +298,9 @@ void add_del_time(int size) {
 		insert_tree.erase(val);
 		end = clock();
 		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
+		outfile << i << " " << (double(end - start)) / (double(CLOCKS_PER_SEC)) << endl;
 	}
+	outfile.close();
 	average_time /= 1000;
 	cout << endl << "Time of erase " << size << average_time;
 }
