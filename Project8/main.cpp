@@ -16,18 +16,8 @@ bool erase(int key) Ц удаление элемента;*!
 #include <vector>
 #include <ostream>
 #include <iomanip>
+
 using namespace std;
-
-
-	struct node
-	{
-		int value;
-		node* left;
-		node* right;
-		node(int val) : value(val), left(nullptr), right(nullptr){}
-		
-	};
-
 
 class Bin_tree {
 
@@ -67,6 +57,15 @@ public:
 
 
 private:
+	struct node
+	{
+		int value;
+		node* left;
+		node* right;
+		node(int val) : value(val), left(nullptr), right(nullptr) {}
+
+	};
+
 	node* root;
 	
 	Bin_tree(node* other): root(other){}
@@ -131,39 +130,49 @@ private:
 		
 		if ((*root)->left == nullptr && (*root)->right == nullptr) {
 			delete *root;
+			*root = nullptr;
 			return true;
 		}
-		else if ((*root)->left != nullptr) {
+		else if ((*root)->left != nullptr && (*root)->right == nullptr) {
 			node* tmp = (*root)->left;
 			delete *root;
 			*root = tmp;
 			return true;
 		}
-		else if ((*root)->right != nullptr) {
+		else if ((*root)->right != nullptr && (*root)->left == nullptr) {
 			node* tmp = (*root)->right;
 			delete *root;
 			*root = tmp;
 			return true;
 		}
 		else {
-			node* tmp = find_min((*root));
-			(*root)->value = tmp->value;
-			erase_shadow(&(*root)->right, (*root)->value);
+			if ((*root)->right) {
+				node* tmp = find_min((*root)->right);
+				(*root)->value = tmp->value;
+				erase_shadow(&(*root)->right, tmp->value);
+			}
+			return true;
 		}
 	}
 
 	node* find_min(node* root) {
+		if (!root) return nullptr;
 		while (root->left != nullptr) {
 			root = root->left;
 		}
 		return root;
 	}
 
-	void obhod(node* root)const {
-		if (root) {
-			obhod(root->left);
-			cout << root->value<<' ';
-			obhod(root->right);
+	void obhod(node* root, int level = 3)const {
+		if (root)
+		{
+			if (root)
+			{
+				obhod(root->right, level + 1);
+				for (int i = 0; i < level; i++) cout << "   ";
+				cout << root->value << endl;
+				obhod(root->left, level + 1);
+			}
 		}
 	}
 
@@ -231,7 +240,7 @@ void create_time(int size) {
 void search_time(int size) {
 	Bin_tree tree;
 	clock_t start, end;
-	double average_time = 0;
+	long double average_time = 0;
 	for (int i = 0; i < size; i++)
 		tree.insert(int(lcg()));
 
@@ -251,7 +260,7 @@ void search_time(int size) {
 void add_del_time(int size) {
 	Bin_tree insert_tree;
 	clock_t start, end;
-	double average_time = 0;
+	long double average_time = 0;
 	for (int j = 0; j < size; j++) {
 		insert_tree.insert(int(lcg()));
 	}
@@ -266,15 +275,12 @@ void add_del_time(int size) {
 	average_time /= 1000;
 	cout << endl << "Time of insert " << size << average_time;
 	average_time = 0;
-	Bin_tree erase_tree;
-	for (int j = 0; j < size; j++)
-		erase_tree.insert(int(lcg()));
 	for (int i = 0; i < 1000; i++)
 	{
 		int val = int(lcg());
-		while (erase_tree.contains(val) == false) val = int(lcg());
+		while (insert_tree.contains(val) == false) val = int(lcg());
 		start = clock();
-		erase_tree.erase(val);
+		insert_tree.erase(val);
 		end = clock();
 		average_time += (double(end - start)) / (double(CLOCKS_PER_SEC));
 	}
@@ -360,7 +366,7 @@ void print_tree(Bin_tree& tree) {
 
 void add_element(Bin_tree& tree) {
 	system("cls");
-	cout << "enter element";
+	cout << "enter element:";
 	int elem = Check();
 	tree.insert(elem);
 }
@@ -385,10 +391,10 @@ void check_elem(Bin_tree& tree) {
 	tree.print();
 	int key = Check();
 	if (tree.contains(key)) {
-		cout << "Found!";
+		cout << "Found!\n";
 	}
 	else {
-		cout << "Not Found";
+		cout << "Not Found\n";
 	}
 }
 
@@ -423,12 +429,12 @@ void padding_vector() {
 	system("cls");
 	cout << "your vector:";
 	for (int i : mass) {
-		cout << i;
+		cout << i << ' ';
 	}
 	cout << "\nyour vector from duplicate:";
 	vector<int>dubl = find_duplicates(mass);
 	for (int i : dubl) {
-		cout << i;
+		cout << i <<' ';
 	}
 }
 
